@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hedeyaty/app_colors.dart';
-
+import 'sign_up_page.dart';
 class LoginPage extends StatefulWidget {
   const LoginPage({ Key? key }) : super(key: key);
 
@@ -18,9 +18,16 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return  Scaffold(
+      resizeToAvoidBottomInset: true,
       backgroundColor: AppColors.primaryDark,
-      body: Center(
+      body: _buildBody(),
+    );
+    
+  }
+
+  Widget _buildBody(){
+    return Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 40),
           child: Column(
@@ -47,7 +54,7 @@ class _LoginPageState extends State<LoginPage> {
               // Login Button
               _buildLoginButton(),
               const SizedBox(height: 20),
-              // Google and Facebook Buttons
+              // Facebook Buttons
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -59,9 +66,7 @@ class _LoginPageState extends State<LoginPage> {
               _buildSignUpPrompt(),
             ],
           ),
-        ),
-      ),
-    );
+        ),);
   }
 
   Widget _buildSignUpPrompt() {
@@ -73,7 +78,9 @@ class _LoginPageState extends State<LoginPage> {
                   style: TextStyle(color: Colors.white),
                 ),
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpPage()));
+                  },
                   child: Text(
                     'Sign Up!',
                     style: TextStyle(color: Colors.blue[400]),
@@ -127,7 +134,7 @@ class _LoginPageState extends State<LoginPage> {
                   });
                 },
                 decoration: InputDecoration(
-                  hintText: 'Username',
+                  hintText: 'Email',
                   filled: true,
                   fillColor: AppColors.textColor,
                   border: OutlineInputBorder(
