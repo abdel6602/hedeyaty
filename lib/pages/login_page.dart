@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hedeyaty/app_colors.dart';
+import 'package:hedeyaty/pages/home_page.dart';
 import 'sign_up_page.dart';
 class LoginPage extends StatefulWidget {
   const LoginPage({ Key? key }) : super(key: key);
@@ -203,9 +204,10 @@ class _LoginPageState extends State<LoginPage> {
                   print('Username: $_username');
                   print("***********");
                   print("Password: $_password");
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.yellow[700],
+                  backgroundColor: const Color(0xFFFBC02D),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),

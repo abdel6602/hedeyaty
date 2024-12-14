@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:hedeyaty/app_colors.dart';
+import 'package:hedeyaty/pages/home_page.dart';
+import 'package:hedeyaty/pages/my_pledged_gifts_page.dart';
+import 'package:hedeyaty/pages/profile_page.dart';
 
 class MyDrawer extends StatelessWidget {
   @override
@@ -7,9 +11,9 @@ class MyDrawer extends StatelessWidget {
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
-          DrawerHeader(
+          const DrawerHeader(
             decoration: BoxDecoration(
-              color: Colors.yellow[800],
+              color: AppColors.thirdDark,
             ),
             child: Text(
               'Menu',
@@ -24,7 +28,7 @@ class MyDrawer extends StatelessWidget {
             title: Text('Home'),
             onTap: () {
               // Handle Home tap
-              Navigator.pop(context); // Close the drawer
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const HomePage()));// Close the drawer
               // Navigate to Home screen
             },
           ),
@@ -33,7 +37,7 @@ class MyDrawer extends StatelessWidget {
             title: Text('Profile'),
             onTap: () {
               // Handle Profile tap
-              Navigator.pop(context); // Close the drawer
+              Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage())); // Close the drawer
               // Navigate to Profile screen
             },
           ),
@@ -42,7 +46,7 @@ class MyDrawer extends StatelessWidget {
             title: Text('My Pledged Gifts'),
             onTap: () {
               // Handle My Pledged Gifts tap
-              Navigator.pop(context); // Close the drawer
+              Navigator.push(context, MaterialPageRoute(builder: (context) => PledgesPage())); // Close the drawer
               // Navigate to My Pledged Gifts screen
             },
           ),

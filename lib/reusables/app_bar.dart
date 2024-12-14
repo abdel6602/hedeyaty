@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hedeyaty/app_colors.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool showProfilePicture;
@@ -9,6 +10,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      backgroundColor: AppColors.thirdDark,
       title: Text(title),
       leading: Builder(builder: 
       (BuildContext context){
@@ -20,14 +22,17 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         );
       }),
       actions: [
-        if (showProfilePicture)
+        Padding(padding: const EdgeInsets.all(5.0),
+        child: showProfilePicture ? 
           CircleAvatar(
-            backgroundImage: NetworkImage('https://animation.fandom.com/wiki/SpongeBob_SquarePants_%28character%29'), // Replace with your actual image URL
-          ),
+            radius: 50,
+            backgroundImage: AssetImage('images/alice.jpeg'), // Replace with your actual image URL
+          ) : Container(),
+        ),
       ],
     );
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight + 20);
 }
