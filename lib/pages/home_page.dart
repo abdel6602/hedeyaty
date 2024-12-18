@@ -61,7 +61,8 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           children: [
             _buildElevatedButton('Create a new events', () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const CreateEvent()));
+              Navigator.push(context, MaterialPageRoute(builder:
+                  (context) => CreateEvent(isCreating: true, isDarkMode: isDarkMode,)));
               // Navigate to the send gift page
             }, false, null),
             const SizedBox(height: 17,),

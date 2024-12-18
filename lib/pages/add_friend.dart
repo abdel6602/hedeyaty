@@ -51,7 +51,7 @@ class _ContactSearchScreenState extends State<ContactSearchScreen> {
     return Scaffold(
       backgroundColor: isDarkMode ? AppColors.primaryDark  : AppColors.primaryLight,
       appBar: CustomAppBar(showProfilePicture: true, title: "Add Friend", isDarkMode: isDarkMode),
-      drawer: const MyDrawer(),
+      drawer: MyDrawer(theme: isDarkMode),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
