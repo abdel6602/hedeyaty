@@ -60,7 +60,7 @@ class _HomePageState extends State<HomePage> {
         padding: const EdgeInsets.all(29.0),
         child: Column(
           children: [
-            _buildElevatedButton('Create a new events', () {
+            _buildElevatedButton('Create a new event', () {
               Navigator.push(context, MaterialPageRoute(builder:
                   (context) => CreateEvent(isCreating: true, isDarkMode: isDarkMode,)));
               // Navigate to the send gift page

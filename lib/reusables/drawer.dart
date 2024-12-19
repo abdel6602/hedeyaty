@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hedeyety2/pages/my_events.dart';
 import '../app_colors.dart';
 import '../pages/home_page.dart';
 import '../pages/login_page.dart';
@@ -64,7 +65,7 @@ class MyDrawer extends StatelessWidget {
             title: Text('My Events'),
             onTap: () {
               // Handle My Events tap
-              Navigator.pop(context); // Close the drawer
+              Navigator.push(context, MaterialPageRoute(builder: (context) => EventsPage(isDarkMode: theme))); // Close the drawer
               // Navigate to My Events screen
             },
           ),

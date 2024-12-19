@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hedeyety2/app_colors.dart';
+import 'package:hedeyety2/models/gift.dart';
 import 'package:hedeyety2/reusables/app_bar.dart';
 import '../reusables/drawer.dart';
 import 'package:image_picker/image_picker.dart';
@@ -29,24 +30,39 @@ class _GiftDetailsState extends State<GiftDetails> {
 
 
   Future<void> _pickImage() async {
-    if (await Permission.photos.request().isGranted) {
+    // Check and request permission
+    if (await _requestStoragePermission()) {
       try {
-        final picker = ImagePicker();
-        final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
+        final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
         if (pickedFile != null) {
           setState(() {
             _imagePath = pickedFile.path;
           });
         }
       } catch (e) {
-        print("Image selection failed: $e");
+        print("Error picking image: $e");
       }
     } else {
-      print("Permission denied.");
+      print("Permission denied");
     }
   }
 
+  Future<bool> _requestStoragePermission() async {
+    PermissionStatus storagePermission = await Permission.storage.request();
+    PermissionStatus cameraPermission = await Permission.camera.request();
+
+    if (storagePermission.isGranted && cameraPermission.isGranted) {
+      return true;
+    } else {
+      if (storagePermission.isDenied || cameraPermission.isDenied) {
+        print("Storage or Camera permission is denied");
+      }
+      if (storagePermission.isPermanentlyDenied || cameraPermission.isPermanentlyDenied) {
+        print("Storage or Camera permission is permanently denied");
+      }
+      return false;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -160,6 +176,37 @@ class _GiftDetailsState extends State<GiftDetails> {
                       borderSide: BorderSide(color: isDarkMode ? AppColors.thirdDark : AppColors.primaryDark),
                     ),
                   ),
+                ),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: isDarkMode ? AppColors.thirdDark : AppColors.secondaryDark,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ) ,
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        // Save the gift details
+                        print("Gift Name: ${_giftNameController.text}");
+                        print("Description: ${_descriptionController.text}");
+                        print("Price: ${_priceController.text}");
+                        print("Image Path: $_imagePath");
+                        
+                        Navigator.pop(context, Gift(
+                            name: _giftNameController.text,
+                            description: _descriptionController.text,
+                            imageUrl: _imagePath ?? "images/Playstation 5.jpeg",
+                            price: _priceController.text,
+                            id: "1",
+                            requestingUserId: "1",
+                            pledgedUserId: "1",
+                            isPledged: false,
+                            categoryId: "1"));
+                      }
+                    },
+                    child: Text("Save", style: TextStyle(color: isDarkMode ? AppColors.primaryDark : AppColors.textColor),)
+
                 ),
               ],
             ),

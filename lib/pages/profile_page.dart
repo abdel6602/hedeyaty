@@ -17,9 +17,9 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
 
   final List<Event> _events = [
-    Event(title: "Birthday", date: DateTime(2025, 12, 17)),
-    Event(title: "Graduation", date: DateTime(2025, 1, 2)),
-    Event(title: "Wedding", date: DateTime(2025, 6, 6)),
+    Event(title: "Birthday", date: DateTime(2025, 12, 17), invitees: [], gifts: []),
+    Event(title: "Graduation", date: DateTime(2025, 1, 2), invitees: [], gifts: []),
+    Event(title: "Wedding", date: DateTime(2025, 6, 6), invitees: [], gifts: []),
   ];
 
   final User profile = User(

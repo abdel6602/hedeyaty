@@ -1,43 +1,75 @@
 import 'package:flutter/material.dart';
+import 'package:hedeyety2/models/event.dart';
 import 'package:hedeyety2/models/gift.dart';
 import 'package:hedeyety2/pages/gift_details.dart';
 import 'package:hedeyety2/reusables/app_bar.dart';
 import 'package:hedeyety2/reusables/drawer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:io';
 
 import '../app_colors.dart';
 import '../models/user.dart';
+import 'invite_friend.dart';
 
 class CreateEvent extends StatefulWidget {
   final bool isCreating;
   final bool isDarkMode;
-  const CreateEvent({super.key, required this.isCreating, required this.isDarkMode});
+  final Event? event;
+  const CreateEvent({super.key, required this.isCreating, required this.isDarkMode, this.event});
 
   @override
-  State<CreateEvent> createState() => _CreateEventState(isCreating:isCreating, isDarkMode: isDarkMode);
+  State<CreateEvent> createState() => _CreateEventState(isCreating:isCreating, isDarkMode: isDarkMode, event: event);
 }
 
 class _CreateEventState extends State<CreateEvent> {
   final bool isCreating;
   final bool isDarkMode;
-  _CreateEventState({required this.isCreating, required this.isDarkMode});
-  List<User> invitees = [ // Sample invitee data
-    User(id: "1", name: "Abdelrahman Gamal", email: "skjdsakd", password: "aksdjaskdj", profilePicture: "images/Bob.jpeg", phoneNumber: "kdjss"),
-    User(id: "1", name: "Sohaila Mohammed", email: "skjdsakd", password: "aksdjaskdj", profilePicture: "images/alice.jpeg", phoneNumber: "kdjss"),
-    User(id: "1", name: "Janna Hani", email: "skjdsakd", password: "aksdjaskdj", profilePicture: "images/Janna.jpeg", phoneNumber: "kdjss"),
-  ];
+  final Event? event;
+  late String original_title;
+  late String original_address;
+  _CreateEventState({required this.isCreating, required this.isDarkMode, this.event});
+  List<User> invitees = [];
   List<Gift> gifts = [];
   DateTime? selectedDate;
   TextEditingController _eventNameController = TextEditingController();
   TextEditingController _addressController = TextEditingController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    if(!isCreating){
+      selectedDate = event!.date;
+      gifts = event!.gifts;
+      invitees = event!.invitees;
+      _eventNameController.text = event!.title;
+      _addressController.text = event!.address ?? "";
+    }
+  }
 
   Future<void> show_gift_details() async {
     // Navigate to the gift details page
     final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => GiftDetails(isDarkMode: isDarkMode,)));
 
     if(result != null && result is Gift){
+      print(gifts);
       setState(() {
         gifts.add(result);
+      });
+    }
+  }
+
+  bool doesFileExist(String path){
+    return File(path).existsSync();
+  }
+
+  Future<void> showInvitePage()async {
+    final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => InviteFriend(isDarkMode: isDarkMode,)));
+    print(result);
+    if(result != null && result is List<User>){
+      print(invitees);
+      setState(() {
+        invitees = result;
       });
     }
   }
@@ -74,9 +106,9 @@ class _CreateEventState extends State<CreateEvent> {
                   color: isDarkMode ? AppColors.textColor : AppColors.primaryDark,),
               ),
               const SizedBox(height: 20),
-              _buildTextField('Event Name', Icons.edit, _eventNameController),
+              _buildTextField('Event Name', Icons.edit, _eventNameController, isCreating ? null : event!.title),
               const SizedBox(height: 10),
-              _buildTextField('Address (optional)', Icons.edit, _addressController),
+              _buildTextField('Address (optional)', Icons.edit, _addressController, (isCreating && (event?.address != null)) ? null : event?.address),
               const SizedBox(height: 10),
               Row(
                 children: [
@@ -109,7 +141,11 @@ class _CreateEventState extends State<CreateEvent> {
                 children: [
                   Text("Invitees", style: TextStyle(color: isDarkMode ? AppColors.textColor : AppColors.primaryDark, fontSize: 18),),
                   const Spacer(),
-                  Icon(Icons.add, color: isDarkMode ? AppColors.textColor : AppColors.primaryDark,),
+                  IconButton(onPressed: () {
+                    // Navigate to the invite friend page
+                    showInvitePage();
+                  }, icon: Icon(Icons.add, color: isDarkMode ? AppColors.textColor : AppColors.primaryDark,),),
+
                 ],
               ),
               const SizedBox(height: 20),
@@ -127,7 +163,7 @@ class _CreateEventState extends State<CreateEvent> {
                         ),
                         tileColor: isDarkMode ? AppColors.thirdDark : AppColors.secondaryDark,
                         leading: CircleAvatar(
-                          backgroundImage: AssetImage(invitees[index].profilePicture),
+                          backgroundImage: AssetImage('images/${invitees[index].profilePicture}'),
                         ),
                         title: Text(invitees[index].name),
                         trailing: IconButton(
@@ -144,6 +180,66 @@ class _CreateEventState extends State<CreateEvent> {
                   );
                 },
               ),
+              const SizedBox(height: 20),
+              Text("Gifts", style: TextStyle(color: isDarkMode ? AppColors.textColor : AppColors.primaryDark, fontSize: 18),),
+              ListView.builder(
+                shrinkWrap: true, // Important for ListView inside Column
+                physics: const NeverScrollableScrollPhysics(), // Disable ListView scrolling
+                itemCount: gifts.length,
+                itemBuilder: (context, index) {
+                  return Column(
+                    children: [
+                      ListTile(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(17),
+                        ),
+                        tileColor: isDarkMode ? AppColors.thirdDark : AppColors.secondaryDark,
+                        leading: CircleAvatar(
+                          backgroundImage: doesFileExist(gifts[index].imageUrl) ?
+                          FileImage(File(gifts[index].imageUrl)) :
+                          AssetImage(gifts[index].imageUrl),
+                        ),
+                        title: Text(gifts[index].name),
+                        trailing: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              gifts.removeAt(index);
+                            });
+                          },
+                          icon: const Icon(Icons.delete, color: Colors.red,),
+                        ),
+                      ),
+                      SizedBox(height: 15,)
+                    ],
+                  );
+                },
+              ),
+              // insert a save button
+              const SizedBox(height: 30),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: isDarkMode ? AppColors.thirdDark : AppColors.secondaryDark,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    onPressed: () async {
+                      // Save the event in database
+                      Navigator.pop(context, Event(
+                          title: _eventNameController.text ?? event!.title,
+                          address: _addressController.text,
+                          date: selectedDate!,
+                          invitees: invitees,
+                          gifts: gifts
+                      ));
+                    },
+                    child: Text('Save', style: TextStyle(color: isDarkMode ? AppColors.primaryDark : AppColors.textColor),),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
@@ -151,12 +247,13 @@ class _CreateEventState extends State<CreateEvent> {
     );
   }
 
-  Widget _buildTextField(String hintText, IconData icon, TextEditingController controller) {
+  Widget _buildTextField(String hintText, IconData icon, TextEditingController controller, String? _value) {
     return TextField(
       controller: controller,
+
       style: TextStyle(color: isDarkMode ? AppColors.primaryDark : AppColors.textColor),
       decoration: InputDecoration(
-        hintText: hintText,
+        hintText: (_value != null) ? _value : hintText,
         hintStyle: TextStyle(color: isDarkMode ? AppColors.primaryDark : AppColors.textColor),
         filled: true,
         fillColor: isDarkMode ? AppColors.textColor : AppColors.primaryDark,
@@ -169,11 +266,5 @@ class _CreateEventState extends State<CreateEvent> {
     );
   }
 
-  // Widget _buildRowWithIcon(String label, IconData icon) {
-  //   return Padding(
-  //     padding: const EdgeInsets.symmetric(horizontal: 30),
-  //     child:
-  //   );
-  // }
 }
 
